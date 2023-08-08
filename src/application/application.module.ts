@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { FactoriesModule } from '../infra/factories/factories.module';
-import { RuralProducerController } from './presentation/rural-producer.controller';
+import { FactoriesModule } from '@/infra/factories/factories.module';
+import { RuralProducerController } from '@/application/presentation/rural-producer.controller';
 
 @Module({
   imports: [FactoriesModule],

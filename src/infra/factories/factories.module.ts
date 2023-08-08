@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ruralProducerRepoFactory } from './repos/rural-producer-repo.factory';
-import { ruralProducerServiceFactory } from './services/rural-producer/rural-producer.factory';
-import { DatabaseTypeormModule } from '../database-typeorm/database-typeorm.module';
+import { ruralProducerRepoFactory } from '@/infra/factories/repos/rural-producer-repo.factory';
+import { ruralProducerServiceFactory } from '@/infra/factories/services/rural-producer/rural-producer.factory';
+import { DatabaseTypeormModule } from '@/infra/database-typeorm/database-typeorm.module';
 
 @Module({
   imports: [DatabaseTypeormModule],

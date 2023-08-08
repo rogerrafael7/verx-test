@@ -31,7 +31,7 @@ export class initial1622580876422 implements MigrationInterface {
           id                 serial primary key,
           created_at         timestamp default now(),
           updated_at         timestamp default now(),
-          rural_producer_id  integer not null references tb_rural_producer (id),
+          rural_producer_id  integer not null references tb_rural_producer (id) on delete cascade,
           plantation_type_id integer not null references td_plantation_type (id)
       );
       

@@ -1,9 +1,11 @@
 import {
   ValidationArguments,
+  ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { cnpj, cpf } from 'cpf-cnpj-validator';
 
+@ValidatorConstraint({ name: 'TaxIdValidator', async: false })
 export class TaxIdValidator implements ValidatorConstraintInterface {
   defaultMessage(validationArguments?: ValidationArguments): string {
     if (validationArguments.value.length === 11) {

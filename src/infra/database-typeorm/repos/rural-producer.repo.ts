@@ -1,41 +1,102 @@
 import {
   PayloadCreateRuralProducer,
   RuralProducerRepoDomain,
-} from '../../../domain/repos/rural-producer-repo.domain';
-import { RuralProducerModelDomain } from '../../../domain/models/rural-producer-model.domain';
+} from '@/domain/repos/rural-producer-repo.domain';
+import { RuralProducerModelDomain } from '@/domain/models/rural-producer-model.domain';
 import { Inject, Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { TYPEORM_DATASOURCE } from '../datasource-typeorm.factory';
-import { RuralProducerEntity } from '../entities/rural-producer.entity';
+import { TYPEORM_DATASOURCE } from '@/infra/database-typeorm/datasource-typeorm.factory';
+import { RuralProducerEntity } from '@/infra/database-typeorm/entities/rural-producer.entity';
+import { RuralProducerPlantationTypeEntity } from '@/infra/database-typeorm/entities/rural-producer-plantation-type.entity';
 
 @Injectable()
 export class RuralProducerRepo implements RuralProducerRepoDomain {
   readonly ruralProducerRepo: Repository<RuralProducerEntity>;
+  readonly ruralProducerPlantationTypeRepo: Repository<RuralProducerPlantationTypeEntity>;
   constructor(
     @Inject(TYPEORM_DATASOURCE)
-    datasource: DataSource,
+    readonly datasource: DataSource,
   ) {
     this.ruralProducerRepo = datasource.getRepository(RuralProducerEntity);
+    this.ruralProducerPlantationTypeRepo = datasource.getRepository(
+      RuralProducerPlantationTypeEntity,
+    );
   }
 
-  create<C = PayloadCreateRuralProducer>(
-    data: C,
-  ): Promise<RuralProducerModelDomain> {
-    return this.ruralProducerRepo.save(this.ruralProducerRepo.create(data));
+  createAndSave(data): Promise<RuralProducerModelDomain> {
+    return this.datasource.transaction(async (manager) => {
+      const ruralProducer = await manager.save(
+        await manager.create(RuralProducerEntity, data),
+      );
+      if (data.plantationTypes?.length) {
+        const ruralProducerPlantationTypes = [];
+        for (const plantationType of data.plantationTypes) {
+          ruralProducerPlantationTypes.push(
+            await manager.save(
+              manager.create(RuralProducerPlantationTypeEntity, {
+                ruralProducerId: ruralProducer.id,
+                plantationTypeId: plantationType,
+              }),
+            ),
+          );
+        }
+        ruralProducer.ruralProducerPlantationTypes =
+          ruralProducerPlantationTypes;
+      }
+      return ruralProducer;
+    });
   }
 
-  async updateById<P = PayloadCreateRuralProducer>(
+  async updateById(
     id: number,
-    data: Partial<P>,
+    data: Partial<PayloadCreateRuralProducer>,
   ): Promise<RuralProducerModelDomain> {
-    const row = await this.ruralProducerRepo
-      .createQueryBuilder('rural_producer')
-      .update()
-      .set(data)
-      .where('id = :id', { id })
-      .returning('*')
-      .execute();
-    return row.raw[0];
+    return this.datasource.transaction(async (manager) => {
+      const payload = {
+        ...data,
+        plantationTypes: undefined,
+      };
+      await manager
+        .createQueryBuilder(RuralProducerEntity, 'rural_producer')
+        .update()
+        .set(payload)
+        .where('id = :id', { id })
+        .returning('*')
+        .execute();
+
+      const ruralProducerUpdated = await manager.findOne(RuralProducerEntity, {
+        where: {
+          id,
+        },
+      });
+
+      if (Array.isArray(data.plantationTypes)) {
+        await manager
+          .createQueryBuilder(
+            RuralProducerPlantationTypeEntity,
+            'rural_producer_plantation_type',
+          )
+          .delete()
+          .where('rural_producer_id = :id', { id })
+          .execute();
+
+        const ruralProducerPlantationTypes = [];
+        for (const plantationType of data.plantationTypes) {
+          ruralProducerPlantationTypes.push(
+            await manager.save(
+              RuralProducerPlantationTypeEntity,
+              this.ruralProducerPlantationTypeRepo.create({
+                ruralProducerId: ruralProducerUpdated.id,
+                plantationTypeId: plantationType,
+              }),
+            ),
+          );
+        }
+        ruralProducerUpdated.ruralProducerPlantationTypes =
+          ruralProducerPlantationTypes;
+      }
+      return ruralProducerUpdated;
+    });
   }
 
   async deleteById(id: number): Promise<void> {

@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { envs } from '../../envs';
+import { envs } from '@/envs';
 
 export const TYPEORM_DATASOURCE = Symbol('TYPEORM_DATASOURCE');
 

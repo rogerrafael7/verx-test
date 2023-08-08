@@ -1,4 +1,4 @@
-import { PlantationTypeModelDomain } from '../../../domain/models/plantation-type-model.domain';
+import { PlantationTypeModelDomain } from '@/domain/models/plantation-type-model.domain';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { RuralProducerPlantationTypeEntity } from './rural-producer-plantation-type.entity';
 

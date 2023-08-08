@@ -1,6 +1,6 @@
 import { IsNumber, IsString, Validate } from 'class-validator';
-import { TaxIdValidator } from '../../infra/common/validators/tax-id.validator';
-import { PayloadCreateRuralProducer } from '../repos/rural-producer-repo.domain';
+import { TaxIdValidator } from '@/infra/common/validators/tax-id.validator';
+import { PayloadCreateRuralProducer } from '@/domain/repos/rural-producer-repo.domain';
 
 export class RuralProducerDtoPayloadDomain
   implements PayloadCreateRuralProducer
@@ -16,16 +16,16 @@ export class RuralProducerDtoPayloadDomain
   city: string;
   @IsString()
   state: string;
-  @IsString()
+  @IsNumber()
   totalAreaHa: number;
-  @IsString()
+  @IsNumber()
   arableAreaHa: number;
-  @IsString()
+  @IsNumber()
   vegetationAreaHa: number;
 
   @IsNumber(
     {},
-    { each: true, message: 'plantationTypeIds must be a number array' },
+    { each: true, message: 'plantationTypeIds must be a IDs list' },
   )
   plantationTypes: number[];
 }

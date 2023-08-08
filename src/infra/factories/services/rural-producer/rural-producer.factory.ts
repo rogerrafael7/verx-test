@@ -1,13 +1,13 @@
-import { createFactory } from '../../create-factory';
+import { createFactory } from '@/infra/factories/create-factory';
 import {
   RURAL_PRODUCER_SERVICE,
   RuralProducerServiceDomain,
-} from '../../../../domain/services/rural-producer-service.domain';
+} from '@/domain/services/rural-producer-service.domain';
 import { RuralProducerService } from './rural-producer.service';
 import {
   RURAL_PRODUCER_REPO,
   RuralProducerRepoDomain,
-} from '../../../../domain/repos/rural-producer-repo.domain';
+} from '@/domain/repos/rural-producer-repo.domain';
 
 export const ruralProducerServiceFactory =
   createFactory<RuralProducerServiceDomain>({
