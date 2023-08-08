@@ -1,12 +1,15 @@
 ### Para Rodar a Aplicação
 > docker-compose up -d
 
-### Para fazer uma carga inicial de dados
+### Para gerar massa de dados
 > npm run generator-data
 
+Esse comando irá gerar 100 registros de produtores rurais junto com seus dados relacionados.
+**OBS:** Esse comando deve ser executado SOMENTE após a aplicação ser executada, devido a criação das estruturas do banco
+de dados que serão geradas pelas migrations.
+
 ### Para testar os endpoints
-Eu subi a collection do postman no repositório, basta importar no postman e rodar os endpoints.
-A collection está em `./assets/Verx.postman_collection.json`
+Essa collection([link](./assets/Verx.postman_collection.json)) pode ser importada no Postman. Nela contém todos os endpoints da aplicação.
 
 ### Observações
-- O arquivo `.env` nao deveria ser versionado por questões de segurança, mas como é um projeto de teste, mantive exposto no repositório para fins de entendimento.
+- O arquivo `.env` está commitado apenas para fins de entendimento e testes.
