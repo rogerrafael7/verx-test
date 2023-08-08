@@ -10,7 +10,7 @@ export class initial1622580876422 implements MigrationInterface {
           created_at         timestamp default now(),
           updated_at         timestamp default now()
       );
-      
+
       create table tb_rural_producer
       (
           id                 serial primary key,
@@ -25,7 +25,7 @@ export class initial1622580876422 implements MigrationInterface {
           arable_area_ha     numeric not null,
           vegetation_area_ha numeric not null
       );
-      
+
       create table ta_rural_producer_plantation_type
       (
           id                 serial primary key,
@@ -34,8 +34,7 @@ export class initial1622580876422 implements MigrationInterface {
           rural_producer_id  integer not null references tb_rural_producer (id) on delete cascade,
           plantation_type_id integer not null references td_plantation_type (id)
       );
-      
-      
+
       INSERT INTO td_plantation_type (name) VALUES ('Cana de Açúcar');
       INSERT INTO td_plantation_type (name) VALUES ('Milho');
       INSERT INTO td_plantation_type (name) VALUES ('Soja');

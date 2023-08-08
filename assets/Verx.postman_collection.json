@@ -1,0 +1,183 @@
+{
+	"info": {
+		"_postman_id": "fdae5d0c-4860-48bb-b8e1-772b287e3114",
+		"name": "Verx",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "314489",
+		"_collection_link": "https://juma-consultoria.postman.co/workspace/Pessoal~a0d5e7bf-4516-4624-bd58-b8860dedaf97/collection/314489-fdae5d0c-4860-48bb-b8e1-772b287e3114?action=share&creator=314489&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "GET RuralProducers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/rural-producer",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"rural-producer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create RuralProducer",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function gerarCpf() {",
+							"  const num1 = aleatorio();",
+							"  const num2 = aleatorio();",
+							"  const num3 = aleatorio();",
+							"  const dig1 = dig(num1, num2, num3);",
+							"  const dig2 = dig(num1, num2, num3, dig1);",
+							"  return `${num1}.${num2}.${num3}-${dig1}${dig2}`;",
+							"}",
+							"",
+							"function dig(n1, n2, n3, n4) { ",
+							"  const nums = n1.split(\"\").concat(n2.split(\"\"), n3.split(\"\"));",
+							"  ",
+							"  if (n4 !== undefined){",
+							"    nums[9] = n4;",
+							"  }",
+							"  ",
+							"  let x = 0;",
+							"   ",
+							"  for (let i = (n4 !== undefined ? 11:10), j = 0; i >= 2; i--, j++) {",
+							"    x += parseInt(nums[j]) * i;",
+							"  }",
+							"  ",
+							"  const y = x % 11;",
+							"  return y < 2 ? 0 : 11 - y; ",
+							"}",
+							"",
+							"function aleatorio() {",
+							"  const aleat = Math.floor(Math.random() * 999);",
+							"  return (\"\" + aleat).padStart(3, '0'); ",
+							"}",
+							"",
+							"const totalArea = Math.floor(Math.random() * 1000);",
+							"const vegetableArea = totalArea * 0.6;",
+							"const arableArea = totalArea * 0.4;",
+							"const plantationTypes = new Array(Math.ceil(Math.random() * 6)).fill(null).map((a, index) => Number(index) + 1);",
+							"",
+							"const states = ['GO', 'MG', 'AM'];",
+							"const state = states[Math.floor(Math.random() * states.length)]",
+							"",
+							"pm.variables.set('STATE', state)",
+							"pm.variables.set(\"CPF_GENERATED\", gerarCpf());",
+							"pm.variables.set(\"TOTAL_AREA\", +totalArea.toFixed(2));",
+							"pm.variables.set(\"VEGETABLE_AREA\", +vegetableArea.toFixed(2));",
+							"pm.variables.set(\"ARABLE_AREA\", +arableArea.toFixed(2));",
+							"pm.variables.set(\"PLANTATION_TYPES\", plantationTypes);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"taxId\": \"{{CPF_GENERATED}}\",\n    \"name\": \"{{$randomFullName}}\",\n    \"farmName\": \"{{$randomCompanyName}}\",\n    \"city\": \"{{$randomCity}}\",\n    \"state\": \"{{STATE}}\",\n    \"totalAreaHa\": {{TOTAL_AREA}},\n    \"arableAreaHa\": {{ARABLE_AREA}},\n    \"vegetationAreaHa\": {{VEGETABLE_AREA}},\n    \"plantationTypes\": [{{PLANTATION_TYPES}}]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/rural-producer",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"rural-producer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update RuralProducer",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Teste\",\n    \"arableAreaHa\": 30,\n    \"vegetationAreaHa\": 80\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/rural-producer/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"rural-producer",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE RuralProducer",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/rural-producer/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"rural-producer",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Stats",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/rural-producer/stats",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"rural-producer",
+						"stats"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
