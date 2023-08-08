@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+  verx_server:
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    depends_on:
+      verx_database:
+        condition: service_healthy
+    networks:
+      - verx-network
+    environment:
+      DATABASE_HOST: verx_database
+      DATABASE_PORT: 5432
+    entrypoint: [ "npm", "run", "start:dev" ]
+  verx_database:
+    image: postgres
+    restart: always
+    networks:
+      - verx-network
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: verx
+    ports:
+      - "5434:5432"
+    volumes:
+      - verx_test_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U postgres -h 127.0.0.1
+      interval: 5s
+
+volumes:
+  verx_test_postgres:
+
+networks:
+  verx-network: { }
