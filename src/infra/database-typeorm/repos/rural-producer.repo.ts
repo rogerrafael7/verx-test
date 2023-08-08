@@ -8,6 +8,7 @@ import { DataSource, Repository } from 'typeorm';
 import { TYPEORM_DATASOURCE } from '@/infra/database-typeorm/datasource-typeorm.factory';
 import { RuralProducerEntity } from '@/infra/database-typeorm/entities/rural-producer.entity';
 import { RuralProducerPlantationTypeEntity } from '@/infra/database-typeorm/entities/rural-producer-plantation-type.entity';
+import { StatsResult } from '@/domain/services/rural-producer-service.domain';
 
 @Injectable()
 export class RuralProducerRepo implements RuralProducerRepoDomain {
@@ -117,5 +118,64 @@ export class RuralProducerRepo implements RuralProducerRepoDomain {
         id,
       },
     });
+  }
+
+  getStats(): Promise<StatsResult> {
+    return this.datasource.query(`
+    WITH
+      all_them AS (
+          SELECT f.state,
+                 f.total_area_ha,
+                 f.arable_area_ha,
+                 f.vegetation_area_ha,
+                 pt.name as plantation_type_name
+          FROM tb_rural_producer f
+                   INNER JOIN ta_rural_producer_plantation_type rppt ON rppt.rural_producer_id = f.id
+                   INNER JOIN td_plantation_type pt ON pt.id = rppt.plantation_type_id
+      ),
+      agg_state AS (
+          SELECT
+              json_agg(
+                         json_build_object(
+                                 'state', f.state,
+                                 'countFarms', f.count_farms,
+                                 'sumTotalArea', f.sum_total_area,
+                                 'sumArableArea', f.sum_arable_area,
+                                 'sumVegetableArea', f.sum_vegetable_area
+                             )
+                     ) as "statsByState"
+          FROM (SELECT f.state,
+                       sum(1) as count_farms,
+                       sum(f.total_area_ha) as sum_total_area,
+                       sum(f.arable_area_ha) as sum_arable_area,
+                       sum(f.vegetation_area_ha) as sum_vegetable_area from all_them f
+               GROUP BY f.state ORDER BY f.state) f
+      ),
+      agg_plantation_type AS (
+          SELECT json_agg(
+                         json_build_object(
+                                 'plantationTypeName', f.plantation_type_name,
+                                 'countFarms', f.count_farms,
+                                 'sumTotalArea', f.sum_total_area,
+                                 'sumArableArea', f.sum_arable_area,
+                                 'sumVegetableArea', f.sum_vegetable_area
+                             )
+                     ) as "statsByPlantationType"
+          FROM (SELECT f.plantation_type_name as plantation_type_name,
+                       sum(1) as count_farms,
+                       sum(f.total_area_ha) as sum_total_area,
+                       sum(f.arable_area_ha) as sum_arable_area,
+                       sum(f.vegetation_area_ha) as sum_vegetable_area
+                FROM all_them f GROUP BY f.plantation_type_name ORDER BY f.plantation_type_name) f
+      ),
+      agg_total AS (
+          SELECT sum(1)                 as "totalCountFarms",
+              sum(f.total_area_ha)     as "sumTotalArea",
+              sum(f.arable_area_ha)    as "sumArableArea",
+              sum(f.vegetation_area_ha) as "sumVegetableArea"
+          FROM all_them f
+      )
+      SELECT agg_total.*, agg_state.*, agg_plantation_type.* from agg_total, agg_state, agg_plantation_type;
+    `)
   }
 }

@@ -18,13 +18,18 @@ export class TaxIdValidator implements ValidatorConstraintInterface {
   }
 
   validate(value: any): Promise<boolean> | boolean {
-    const taxId = value;
-    if (taxId.length === 11) {
-      return this.validateCPF(taxId);
-    } else if (taxId.length === 14) {
-      return this.validateCNPJ(taxId);
-    } else {
-      return false;
+    try {
+      const taxId = String(value).replace(/\D/g, '');
+      if (taxId.length === 11) {
+        return this.validateCPF(taxId);
+      } else if (taxId.length === 14) {
+        return this.validateCNPJ(taxId);
+      } else {
+        return false;
+      }
+    } catch(error) {
+      console.error(error.message)
+      return false
     }
   }
   validateCPF(cpfValue: string): boolean {

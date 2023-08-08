@@ -3,6 +3,29 @@ import { PayloadCreateRuralProducer } from '@/domain/repos/rural-producer-repo.d
 
 export const RURAL_PRODUCER_SERVICE = Symbol('RURAL_PRODUCER_SERVICE');
 
+export interface StatsResult {
+  totalCountFarms: number;
+  sumTotalArea: number;
+  sumArableArea: number;
+  sumVegetableArea: number;
+
+  statsByState: {
+    state: string;
+    countFarms: number;
+    sumTotalArea: number;
+    sumArableArea: number;
+    sumVegetableArea: number;
+  }[];
+
+  statsByPlantationType: {
+    plantationTypeName: string;
+    countFarms: number;
+    sumTotalArea: number;
+    sumArableArea: number;
+    sumVegetableArea: number;
+  }[];
+}
+
 export interface RuralProducerServiceDomain {
   createAndSave(
     ruralProducer: PayloadCreateRuralProducer,
@@ -12,5 +35,6 @@ export interface RuralProducerServiceDomain {
     data: Partial<PayloadCreateRuralProducer>,
   ): Promise<RuralProducerModelDomain>;
   deleteById(id: number): Promise<void>;
+  getStats(): Promise<StatsResult>;
   getAllRuralProducers(): Promise<RuralProducerModelDomain[]>;
 }

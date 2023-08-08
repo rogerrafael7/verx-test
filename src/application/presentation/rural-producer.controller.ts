@@ -41,4 +41,9 @@ export class RuralProducerController {
   deleteById(@Param('id') id: number) {
     return this.ruralProducerService.deleteById(id);
   }
+
+  @Get('stats')
+  getStats() {
+    return this.ruralProducerService.getStats();
+  }
 }
