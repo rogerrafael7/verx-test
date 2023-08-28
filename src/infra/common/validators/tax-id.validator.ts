@@ -27,9 +27,9 @@ export class TaxIdValidator implements ValidatorConstraintInterface {
       } else {
         return false;
       }
-    } catch(error) {
-      console.error(error.message)
-      return false
+    } catch (error) {
+      console.error(error.message);
+      return false;
     }
   }
   validateCPF(cpfValue: string): boolean {

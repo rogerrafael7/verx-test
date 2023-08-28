@@ -1,6 +1,6 @@
 import { BaseRepoDomain } from '@/domain/repos/base-repo.domain';
 import { RuralProducerModelDomain } from '@/domain/models/rural-producer-model.domain';
-import {StatsResult} from "@/domain/services/rural-producer-service.domain";
+import { StatsResult } from '@/domain/services/rural-producer-service.domain';
 
 export const RURAL_PRODUCER_REPO = Symbol('RURAL_PRODUCER_REPO');
 
