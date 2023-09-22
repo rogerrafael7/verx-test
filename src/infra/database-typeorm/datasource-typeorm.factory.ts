@@ -1,9 +1,10 @@
 import { DataSource } from 'typeorm';
 import { envs } from '@/envs';
+import { createFactory } from '@/infra/factories/create-factory';
 
 export const TYPEORM_DATASOURCE = Symbol('TYPEORM_DATASOURCE');
 
-export const databaseProviders = {
+export const databaseProviders = createFactory<Promise<DataSource>>({
   provide: TYPEORM_DATASOURCE,
   useFactory: async () => {
     const dataSource = new DataSource({
@@ -21,4 +22,4 @@ export const databaseProviders = {
 
     return dataSource.initialize();
   },
-};
+});
